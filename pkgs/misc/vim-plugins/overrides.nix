@@ -30,6 +30,9 @@
 
 # vCoolor dependency
 , gnome3
+
+# fruzzy dependency
+, nim
 }:
 
 self: super: {
@@ -381,6 +384,28 @@ self: super: {
 
   forms = super.forms.overrideAttrs(old: {
     dependencies = with super; [ super.self ];
+  });
+
+  fruzzy = let # until https://github.com/NixOS/nixpkgs/pull/67878 is merged, there's no better way to install nim libraries with nix
+    nimpy = fetchTarball "https://github.com/yglukhov/nimpy/archive/master.tar.gz";
+    binaryheap = fetchTarball "https://github.com/bluenote10/nim-heap/archive/master.tar.gz";
+  in super.fruzzy.overrideAttrs(old: {
+    buildInputs = [ nim ];
+    patches = [
+      (substituteAll {
+        src = ./patches/fruzzy/get_version.patch;
+        version = old.version;
+      })
+    ];
+    configurePhase = ''
+      substituteInPlace Makefile \
+        --replace \
+          "nim c" \
+          "nim c --nimcache:$TMP --path:${nimpy} --path:${binaryheap}"
+    '';
+    buildPhase = ''
+      make build
+    '';
   });
 
   ghcid = super.ghcid.overrideAttrs(old: {
