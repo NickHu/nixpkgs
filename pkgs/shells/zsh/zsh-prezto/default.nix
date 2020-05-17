@@ -1,11 +1,13 @@
-{ stdenv, fetchgit }:
+{ stdenv, fetchFromGitHub }:
 
-stdenv.mkDerivation {
-  name = "zsh-prezto-2019-03-18";
-  src = fetchgit {
-    url = "https://github.com/sorin-ionescu/prezto";
-    rev = "1f4601e44c989b90dc7314b151891fa60a101251";
-    sha256 = "1dcd5r7pc4biiplm0lh7yca0h6hs0xpaq9dwaarmfsh9wrd68350";
+stdenv.mkDerivation rec {
+  pname = "zsh-prezto";
+  version = "2020-05-02";
+  src = fetchFromGitHub {
+    owner = "sorin-ionescu";
+    repo = "prezto";
+    rev = "13c61bae30c3a8cf610623c094f2aa0a95fbf035";
+    sha256 = "1i283y1cn4j7c41naafy4zv77shbg9ff6c2sld2lrvy7sarbliy1";
     fetchSubmodules = true;
   };
   buildPhase = ''
